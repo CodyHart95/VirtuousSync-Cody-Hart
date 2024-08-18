@@ -29,10 +29,11 @@ namespace Sync
             {
                 do
                 {
-                    var contacts = await virtuousService.GetContactsAsync(skip, take);
+                    Console.WriteLine($"Fetching Contacts {skip} through {skip + take}");
+                    var contacts = await virtuousService.GetContactsAsync(skip, take, "AZ");
                     skip += take;
                     csv.WriteRecords(contacts.List);
-                    hasMore = skip < maxContacts;
+                    hasMore = skip < maxContacts && skip < contacts.Total;
                 }
                 while (hasMore);
             }
