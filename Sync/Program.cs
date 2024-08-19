@@ -1,5 +1,7 @@
 ﻿using CsvHelper;
+using Sync.Database;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
@@ -15,7 +17,7 @@ namespace Sync
 
         private static async Task Sync()
         {
-            var apiKey = "";
+            var apiKey = "v_eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiN2VhYTBhNTQtYTBiZC00OTNlLWFjNDMtZjNjZGEwZmVlNWQ5IiwiZXhwIjoyMTQ3NDgzNjQ3LCJpc3MiOiJodHRwczovL2FwcC52aXJ0dW91c3NvZnR3YXJlLmNvbSIsImF1ZCI6Imh0dHBzOi8vYXBpLnZpcnR1b3Vzc29mdHdhcmUuY29tIn0.oN0bfmYMS7lPxGtVH3ouEVhD0Kuzoqa2nAnuvPTyPpk";
             var configuration = new Configuration(apiKey);
             var virtuousService = new VirtuousService(configuration);
 
@@ -23,6 +25,8 @@ namespace Sync
             var take = 100;
             var maxContacts = 1000;
             var hasMore = true;
+
+            var records = new List<AbbreviatedContact>();
 
             using (var writer = new StreamWriter($"Contacts_{DateTime.Now:MM_dd_yyyy}.csv"))
             using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
@@ -32,11 +36,15 @@ namespace Sync
                     Console.WriteLine($"Fetching Contacts {skip} through {skip + take}");
                     var contacts = await virtuousService.GetContactsAsync(skip, take, "AZ");
                     skip += take;
-                    csv.WriteRecords(contacts.List);
+                    records.AddRange(contacts.List);
                     hasMore = skip < maxContacts && skip < contacts.Total;
                 }
                 while (hasMore);
             }
-        }
+
+            var insertQuery = new InsertContactsQuery(records);
+
+            await new DatabaseHelper().ExecuteQuery(insertQuery);
+    }
     }
 }
