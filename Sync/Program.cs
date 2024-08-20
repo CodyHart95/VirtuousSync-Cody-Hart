@@ -37,7 +37,7 @@ namespace Sync
                 do
                 {
                     Console.WriteLine($"Fetching Contacts {skip} through {skip + take}");
-                    var contacts = await virtuousService.GetContactsAsync(skip, take);
+                    var contacts = await virtuousService.GetContactsAsync(skip, take, "AZ");
                     skip += take;
                     records.AddRange(contacts.List);
                     hasMore = skip < maxContacts && skip < contacts.Total;
