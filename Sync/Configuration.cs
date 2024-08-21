@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Sync
 {
@@ -13,12 +9,13 @@ namespace Sync
 
     internal class Configuration : IConfiguration
     {
-        public Configuration(string apiKey) 
+        public Configuration(string apiKey, string dbConnectionString) 
         {
             Values = new Dictionary<string, string>()
             {
                 { "VirtuousApiBaseUrl", "https://api.virtuoussoftware.com" },
-                { "VirtuousApiKey", apiKey }
+                { "VirtuousApiKey", apiKey },
+                { "DBConnectionString",  dbConnectionString}
             };
         }
 
